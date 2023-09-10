@@ -1,0 +1,16 @@
+deploy:
+  tags:
+    - vps
+  image: python3.8
+  before_script:
+    - "which ssh-agent || (apt-get update -y && apt-get install openssh-client -y)"
+    - eval $(ssh-agent -s)
+    - echo "$DEPLOY_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~./ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan <your-ip> >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh root@<your-ip> "cd ~/django-site; git pull; source ~/django-project/bin/activate; pip install -r requirements.txt; sudo systemctl restart gunicorn; sudo systemctl restart nginx"
+  only:
+    - main

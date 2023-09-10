@@ -1,0 +1,4 @@
+django
+stripe
+psycopg2-binary
+django-cors-headers
